@@ -38,8 +38,18 @@ button.stop{background:#e8605a}
 .note p{white-space:pre-wrap;font-size:14px;margin-top:4px}
 .lg{width:76px;height:76px;border-radius:50%;border:3px solid #3a9ee8;margin:0 auto 10px;overflow:hidden;display:flex;align-items:center;justify-content:center;font:700 34px 'Playfair Display',serif;color:#3a9ee8;background:#fff;box-shadow:0 6px 16px rgba(58,158,232,.25);animation:float 3.5s ease-in-out infinite}
 .lg img{width:100%;height:100%;object-fit:cover}
+.lb{font-size:12px;font-weight:500;color:#5d7b96;display:block;margin:10px 0 2px;text-transform:uppercase}
+.cd{display:flex;gap:8px;margin:6px 0 12px}
+.cd div{flex:1;background:#eaf5fe;border-radius:14px;padding:12px 0 8px;text-align:center;font-size:24px;font-weight:600;color:#1f86d6;font-variant-numeric:tabular-nums}
+.cd small{display:block;font:400 11px 'Poppins';color:#5d7b96}
+.ex{display:flex;justify-content:space-between;font-size:14px;padding:7px 0;border-top:1px solid #e8f2fb}
+.gh{background:#fff!important;color:#1f86d6!important;border:1px solid #3a9ee8!important;margin-top:10px!important}
+.st3{display:flex;gap:6px;margin-top:8px}
+.st3 label{flex:1;display:flex;align-items:center;gap:6px;background:#f4f9ff;border:1px solid #cfe4f7;border-radius:12px;padding:9px 8px;font-size:13px;transition:.2s}
+.st3 label.on{background:#eaf5fe;border-color:#3a9ee8;color:#1f86d6;font-weight:500}
+.st3 input{width:18px;height:18px;margin:0;padding:0;accent-color:#3a9ee8}
 nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:flex;background:#fff;border-top:1px solid #d9eafa;z-index:9}
-nav button{background:none;color:#5d7b96;border:0;border-radius:0;margin:0;font-size:12px;padding:14px 2px;position:relative}
+nav button{background:none;color:#5d7b96;border:0;border-radius:0;margin:0;font-size:11px;padding:14px 2px;position:relative}
 nav button.on{color:#1f86d6;border-top:3px solid #3a9ee8;padding-top:11px}
 #bd{position:absolute;top:4px;right:10px;background:#e8605a;color:#fff;border-radius:9px;font-size:10px;padding:1px 6px}
 #lock{padding-top:18vh;text-align:center}
@@ -56,15 +66,22 @@ nav button.on{color:#1f86d6;border-top:3px solid #3a9ee8;padding-top:11px}
 <div id="lock"><div class="lg"></div><h1>PARV STUDY SPACE</h1><div class="sub">Personal &middot; Private</div>
 <input id="pw" type="password" placeholder="Enter password"><button onclick="login()">Unlock</button><div id="err" class="err"></div></div>
 
+<div id="su" hidden style="padding-top:5vh"><div class="lg"></div><h1>Exam Dates</h1><div class="sub">Enter the date of every exam. Leave blank if a subject has no exam.</div>
+<div class="card" id="sul"></div><button onclick="saveEx()">Save &amp; Continue</button><div class="err" id="sue"></div></div>
+
 <div id="app" hidden>
 <div class="lg"></div><h1>PARV STUDY SPACE</h1><div class="sub" id="hi"></div>
 
 <section id="p0">
+<div class="card"><h2>Next Exam &middot; <span id="nx">--</span></h2>
+<div class="cd"><div><span id="cd_d">00</span><small>Days</small></div><div><span id="cd_h">00</span><small>Hours</small></div><div><span id="cd_m">00</span><small>Minutes</small></div><div><span id="cd_s">00</span><small>Seconds</small></div></div>
+<div id="exl"></div><button class="gh" onclick="editEx()">Edit exam dates</button></div>
 <div class="card" id="tc"><h2>Study Timer</h2><select id="hs"></select>
 <div class="big" id="sw" style="margin:8px 0;font-size:40px">00:00:00</div>
 <button id="sb" onclick="toggle()">Start Studying</button></div>
 <div class="card"><h2>Daily Streak</h2><div class="big" id="st">0</div><div class="sm">day streak &middot; 30 min a day keeps it alive</div>
 <div class="bar"><div id="gb"></div></div><div class="sm" id="gt"></div></div>
+<div class="card"><h2>Today by Subject</h2><div id="tsb"></div><div class="sm" style="margin-top:6px">Time is saved when you tap Stop &amp; Save.</div></div>
 <div class="card"><h2>Daily Planner</h2><input type="date" id="pd" onchange="rd()">
 <div class="two"><input type="time" id="pt"><input id="pn" placeholder="Task"></div>
 <button onclick="addPl()">Add to Plan</button><div id="pl"></div></div>
@@ -75,6 +92,7 @@ nav button.on{color:#1f86d6;border-top:3px solid #3a9ee8;padding-top:11px}
 <div class="two seg"><button id="r7" class="on" onclick="R=7;stats()">Week</button><button id="r30" onclick="R=30;stats()">Month</button></div>
 <div id="ch"></div><div class="sm" id="cs"></div></div>
 <div class="card"><h2>By Subject</h2><div id="sj"></div></div>
+<div class="card"><h2>Study Log</h2><div id="slog"></div></div>
 </section>
 
 <section id="p2" hidden>
@@ -97,14 +115,23 @@ nav button.on{color:#1f86d6;border-top:3px solid #3a9ee8;padding-top:11px}
 <div class="card"><h2>Revision List</h2><div id="rl"></div></div>
 </section>
 
-<nav id="nav"><button class="on" onclick="go(0)">Today</button><button onclick="go(1)">Stats</button><button onclick="go(2)">Tests</button><button onclick="go(3)">Notes</button><button onclick="go(4)">Revise<span id="bd" hidden></span></button></nav>
+<section id="p5" hidden>
+<div class="card"><h2>Syllabus Progress</h2><div id="ov"></div></div>
+<div class="card"><h2>Add Chapters</h2><select id="cps" onchange="chap()"></select>
+<textarea id="cnm" placeholder="Chapter name (add many: one per line)"></textarea><button onclick="addC()">Add Chapters</button></div>
+<div class="card"><h2 id="cth">Chapters</h2>
+<div class="two seg"><button id="f0" class="on" onclick="CF=0;chap()">All</button><button id="f1" onclick="CF=1;chap()">Pending</button><button id="f2" onclick="CF=2;chap()">Final Done</button></div>
+<div class="sm" id="cst" style="margin-top:8px"></div><div class="bar"><div id="cbar"></div></div><div id="cl"></div></div>
+</section>
+
+<nav id="nav"><button class="on" onclick="go(0)">Today</button><button onclick="go(1)">Stats</button><button onclick="go(2)">Tests</button><button onclick="go(3)">Notes</button><button onclick="go(4)">Revise<span id="bd" hidden></span></button><button onclick="go(5)">Chapters</button></nav>
 </div>
 
 <script>
-const PW="PARVJI",LOGO_URL="",GOAL=10800,MIN=1800;
+const PW="parvyoucandoit",LOGO_URL="",GOAL=10800,MIN=1800,EXAM_HOUR=9;
 const S=["Hindi","English","Maths","Science","Social Science","Sanskrit"];
 let D={};try{D=JSON.parse(localStorage.getItem("pp1"))||{}}catch(e){}
-["pl","t","n","r"].forEach(k=>D[k]=D[k]||[]);D.h=D.h||{};
+["pl","t","n","r","ch"].forEach(k=>D[k]=D[k]||[]);D.h=D.h||{};
 let R=7;
 const $=id=>document.getElementById(id);
 const save=()=>localStorage.setItem("pp1",JSON.stringify(D));
@@ -116,6 +143,8 @@ const hm=s=>Math.floor(s/3600)+"h "+Math.floor(s%3600/60)+"m";
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const fd=d=>d.split("-").reverse().join("/");
+const exT=d=>new Date(`${d}T${p2(EXAM_HOUR)}:00:00`);
+let CF=0;
 const run=()=>D.sw?Math.floor((Date.now()-D.sw.t)/1000):0;
 const tt=k=>Object.values(D.h[k]||{}).reduce((a,b)=>a+b,0)+(k===tod()?run():0);
 const retrig=(e,c)=>{e.classList.remove(c);void e.offsetWidth;e.classList.add(c)};
@@ -129,15 +158,15 @@ function login(){
  else{$("err").textContent="Incorrect password.";retrig($("pw"),"shake")}
 }
 function start(){
- $("lock").hidden=true;$("app").hidden=false;
- $("hs").innerHTML=$("ts").innerHTML=$("ns").innerHTML=opts(S);
+ $("lock").hidden=true;if(!D.ex){editEx();return}$("su").hidden=true;$("app").hidden=false;
+ $("hs").innerHTML=$("ts").innerHTML=$("ns").innerHTML=$("cps").innerHTML=opts(S);
  $("nf").innerHTML=opts(["All subjects",...S]);
  $("pd").value=$("td").value=$("rdt").value=tod();
  if(D.sw)$("hs").value=D.sw.s;
  rd();tick();
 }
 function go(i){
- for(let j=0;j<5;j++)$("p"+j).hidden=j!==i;
+ for(let j=0;j<6;j++)$("p"+j).hidden=j!==i;
  [...$("nav").children].forEach((b,j)=>b.classList.toggle("on",j===i));
  scrollTo(0,0);
 }
@@ -174,13 +203,15 @@ function rd(){
  $("sb").className=D.sw?"stop":"";$("hs").disabled=!!D.sw;$("tc").classList.toggle("run",!!D.sw);
  $("pl").innerHTML=D.pl.filter(x=>x.d===$("pd").value).sort((a,b)=>a.t.localeCompare(b.t)).map(x=>
   `<div class="row"><input type="checkbox" ${x.done?"checked":""} onchange="tgl('pl','${x.id}')"><span class="${x.done?"done":""}">${x.t?`<b>${x.t}</b> `:""}${esc(x.n)}</span><button class="x" onclick="del('pl','${x.id}')">\u2715</button></div>`).join("")||'<div class="sm">No tasks for this date</div>';
- stats();tests();notes();rev();
+ stats();tests();notes();rev();chap();exams();
 }
 function stats(){
  $("r7").classList.toggle("on",R===7);$("r30").classList.toggle("on",R===30);
  const days=[];for(let i=R-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d)}
  const v=days.map(d=>tt(key(d))),mx=Math.max(...v,3600),sum=v.reduce((a,b)=>a+b,0);
  $("ch").innerHTML=days.map((d,i)=>`<div class="b"><div style="height:${v[i]/mx*100}%"></div><small>${R===7?"SMTWTFS"[d.getDay()]:(i%5===0?d.getDate():"")}</small></div>`).join("");
+ const lg=[];for(let i=0;i<30;i++){const d=new Date();d.setDate(d.getDate()-i);const k=key(d),h=D.h[k];if(h&&Object.values(h).some(v=>v>0))lg.push([k,h])}
+ $("slog").innerHTML=lg.map(([k,h])=>`<div class="note"><div class="two"><b>${fd(k)}</b><span style="text-align:right;color:#1f86d6">${hm(Object.values(h).reduce((a,b)=>a+b,0))}</span></div><div>${Object.entries(h).filter(e=>e[1]>0).map(([s,t])=>`<span class="tag" style="margin:4px 4px 0 0">${s} ${hm(t)}</span>`).join("")}</div></div>`).join("")||'<div class="sm">No study history yet</div>';
  $("cs").textContent=`Total ${hm(sum)} \u2022 Daily average ${hm(Math.round(sum/R))}`;
  const sj=S.map(s=>[s,days.reduce((a,d)=>a+((D.h[key(d)]||{})[s]||0),0)]),m2=Math.max(...sj.map(x=>x[1]),1);
  $("sj").innerHTML=sj.map(([s,t])=>`<div style="margin:8px 0"><div class="two" style="font-size:14px"><span>${s}</span><span style="text-align:right;color:#1f86d6">${hm(t)}</span></div><div class="bar" style="margin:3px 0"><div style="width:${t/m2*100}%"></div></div></div>`).join("");
@@ -209,8 +240,47 @@ function rev(){
  $("bd").hidden=!due;$("bd").textContent=due;
  $("hi").textContent="Welcome back, Parv"+(due?` \u2022 ${due} revision${due>1?"s":""} due`:"");
 }
+function exForm(){$("sul").innerHTML=S.map((s,i)=>`<label class="lb">${s} exam date</label><input type="date" id="x${i}" min="${tod()}" value="${(D.ex||{})[s]||""}">`).join("")}
+function editEx(){exForm();$("sue").textContent="";$("lock").hidden=true;$("app").hidden=true;$("su").hidden=false}
+function saveEx(){
+ const e={};S.forEach((s,i)=>{const v=$("x"+i).value;if(v)e[s]=v});
+ if(!Object.keys(e).length){$("sue").textContent="Add at least one exam date.";return}
+ if(Object.values(e).some(v=>v<tod())){$("sue").textContent="Exam dates cannot be in the past.";return}
+ D.ex=e;save();start();
+}
+function exams(){
+ $("exl").innerHTML=Object.entries(D.ex||{}).sort((a,b)=>a[1].localeCompare(b[1])).map(([s,d])=>{
+  const n=Math.round((new Date(d+"T00:00:00")-new Date(tod()+"T00:00:00"))/864e5);
+  return `<div class="ex"><b>${s}</b><span>${fd(d)} \u2022 ${n<0?"Completed":n===0?"Today":n===1?"Tomorrow":n+" days left"}</span></div>`}).join("");
+ const h=D.h[tod()]||{};
+ $("tsb").innerHTML=S.filter(s=>h[s]>0).map(s=>`<div class="ex"><b>${s}</b><span>${hm(h[s])}</span></div>`).join("")||'<div class="sm">No study saved today yet</div>';
+}
+function addC(){
+ const l=$("cnm").value.split("\n").map(x=>x.trim()).filter(Boolean);if(!l.length)return;
+ l.forEach(n=>D.ch.push({id:uid(),s:$("cps").value,n:n,a:[false,false,false],p:false}));
+ $("cnm").value="";save();rd();
+}
+const stg=(id,i)=>{const x=D.ch.find(o=>o.id===id);x.a[i]=!x.a[i];save();rd()};
+const pri=id=>{const x=D.ch.find(o=>o.id===id);x.p=!x.p;save();rd()};
+function chap(){
+ const s=$("cps").value,all=D.ch.filter(x=>x.s===s),n=all.length,c=i=>all.filter(x=>x.a[i]).length;
+ [0,1,2].forEach(i=>$("f"+i).classList.toggle("on",CF===i));
+ $("cth").textContent=s+" Chapters";
+ $("cst").textContent=n?`Simple ${c(0)}/${n} \u2022 Write ${c(1)}/${n} \u2022 Final ${c(2)}/${n}`:"No chapters added yet";
+ $("cbar").style.width=(n?(c(0)+c(1)+c(2))/(3*n)*100:0)+"%";
+ $("cl").innerHTML=all.filter(x=>CF===0||(CF===1&&!x.a[2])||(CF===2&&x.a[2])).sort((a,b)=>b.p-a.p).map(x=>{
+  const k=x.a.filter(Boolean).length;
+  return `<div class="note"><div class="two"><b>${x.p?"\u2605 ":""}${esc(x.n)}</b><span style="text-align:right"><button class="x" style="display:inline-block" onclick="pri('${x.id}')">${x.p?"\u2605":"\u2606"}</button><button class="x" style="display:inline-block" onclick="del('ch','${x.id}')">\u2715</button></span></div><div class="st3">${["Simple","Write","Final"].map((l,i)=>`<label class="${x.a[i]?"on":""}"><input type="checkbox" ${x.a[i]?"checked":""} onchange="stg('${x.id}',${i})">${l}</label>`).join("")}</div><div class   return `<div class="note"><div class="two"><b>${x.p?"\u2605 ":""}${esc(x.n)}</b><span style="text-align:right"><button class="x" style="display:inline-block" onclick="pri('${x.id}')">${x.p?"\u2605":"\u2606"}</button><button class="x" style="display:inline-block" onclick="del('ch','${x.id}')">\u2715</button></span></div><div class="st3">${["Simple","Write","Final"].map((l,i)=>`<label class="${x.a[i]?"on":""}"><input type="checkbox" ${x.a[i]?"checked":""} onchange="stg('${x.id}',${i})">${l}</label>`).join("")}</div><div class="sm" style="text-align:left;margin-top:5px">${k===3?"Completed \u2705":k+"/3 done"}</div></div>`}).join("")||'<div class="sm">Nothing here</div>';
+ const ps=S.map(q=>{const l=D.ch.filter(x=>x.s===q);return[q,l.length,l.reduce((a,x)=>a+x.a.filter(Boolean).length,0),l.filter(x=>x.a[2]).length]});
+ const tn=ps.reduce((a,x)=>a+x[1],0),tk=ps.reduce((a,x)=>a+x[2],0);
+ $("ov").innerHTML=`<div class="big">${tn?Math.round(tk/(3*tn)*100):0}%</div><div class="sm">overall complete \u2022 ${tn} chapters</div>`+ps.map(([q,m,t,f])=>`<div style="margin:8px 0"><div class="two" style="font-size:14px"><span>${q} <span class="tag">${f}/${m} final</span></span><span style="text-align:right;color:#1f86d6">${m?Math.round(t/(3*m)*100):0}%</span></div><div class="bar" style="margin:3px 0"><div style="width:${m?t/(3*m)*100:0}%"></div></div></div>`).join("");
+}
 function tick(){
  if($("app").hidden)return;
+ const now=Date.now(),ex=Object.entries(D.ex||{}).map(([s,d])=>({s:s,t:exT(d)})).sort((a,b)=>a.t-b.t),nx=ex.find(e=>e.t>now);
+ if(nx){const r=Math.floor((nx.t-now)/1000);$("nx").textContent=nx.s;
+  [Math.floor(r/86400),Math.floor(r%86400/3600),Math.floor(r%3600/60),r%60].forEach((v,i)=>{const el=$("cd_"+"dhms"[i]),q=p2(v);if(el.textContent!==q){el.textContent=q;if(i===3)retrig(el,"pop")}});
+ }else{$("nx").textContent="No upcoming exam";["d","h","m","s"].forEach(x=>$("cd_"+x).textContent="00")}
  const t=tt(tod());
  $("gb").style.width=Math.min(100,t/GOAL*100)+"%";
  $("gt").textContent=`Today: ${hm(t)} of 3h goal`+(t<MIN?` \u2022 ${Math.ceil((MIN-t)/60)} min to secure streak`:"");
@@ -223,4 +293,3 @@ setInterval(tick,1000);
 if(sessionStorage.ok)start();
 </script>
 </body></html>
-
