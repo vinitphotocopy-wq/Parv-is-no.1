@@ -44,7 +44,8 @@ button.stop{background:#e8605a}
 .cd small{display:block;font:400 11px 'Poppins';color:#5d7b96}
 .ex{display:flex;justify-content:space-between;font-size:14px;padding:7px 0;border-top:1px solid #e8f2fb}
 .gh{background:#fff!important;color:#1f86d6!important;border:1px solid #3a9ee8!important;margin-top:10px!important}
-.st3{display:flex;gap:6px;margin-top:8px}
+.st3{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.ib{width:auto!important;background:none!important;color:#3a9ee8!important;padding:2px 7px!important;margin:0!important;font-size:17px!important}
 .st3 label{flex:1;display:flex;align-items:center;gap:6px;background:#f4f9ff;border:1px solid #cfe4f7;border-radius:12px;padding:9px 8px;font-size:13px;transition:.2s}
 .st3 label.on{background:#eaf5fe;border-color:#3a9ee8;color:#1f86d6;font-weight:500}
 .st3 input{width:18px;height:18px;margin:0;padding:0;accent-color:#3a9ee8}
@@ -62,20 +63,21 @@ nav button.on{color:#1f86d6;border-top:3px solid #3a9ee8;padding-top:11px}
 @keyframes pop{50%{transform:scale(1.12)}}
 @keyframes glow{50%{text-shadow:0 0 14px rgba(58,158,232,.55)}}
 </style></head><body>
-
 <div id="lock"><div class="lg"></div><h1>PARV STUDY SPACE</h1><div class="sub">Personal &middot; Private</div>
 <input id="pw" type="password" placeholder="Enter password"><button onclick="login()">Unlock</button><div id="err" class="err"></div></div>
-
 <div id="su" hidden style="padding-top:5vh"><div class="lg"></div><h1>Exam Dates</h1><div class="sub">Enter the date of every exam. Leave blank if a subject has no exam.</div>
 <div class="card" id="sul"></div><button onclick="saveEx()">Save &amp; Continue</button><div class="err" id="sue"></div></div>
-
 <div id="app" hidden>
 <div class="lg"></div><h1>PARV STUDY SPACE</h1><div class="sub" id="hi"></div>
-
 <section id="p0">
 <div class="card"><h2>Next Exam &middot; <span id="nx">--</span></h2>
 <div class="cd"><div><span id="cd_d">00</span><small>Days</small></div><div><span id="cd_h">00</span><small>Hours</small></div><div><span id="cd_m">00</span><small>Minutes</small></div><div><span id="cd_s">00</span><small>Seconds</small></div></div>
 <div id="exl"></div><button class="gh" onclick="editEx()">Edit exam dates</button></div>
+<div class="card"><h2>Phase Plan</h2><div id="phl"></div>
+<input id="phn" placeholder="Phase name (e.g. Revision)">
+<div class="two"><input type="date" id="phf"><input type="date" id="pht"></div>
+<div class="sm">From &middot; To (From can be empty)</div>
+<button id="phb" onclick="savePh()">Add Phase</button></div>
 <div class="card" id="tc"><h2>Study Timer</h2><select id="hs"></select>
 <div class="big" id="sw" style="margin:8px 0;font-size:40px">00:00:00</div>
 <button id="sb" onclick="toggle()">Start Studying</button></div>
@@ -86,7 +88,6 @@ nav button.on{color:#1f86d6;border-top:3px solid #3a9ee8;padding-top:11px}
 <div class="two"><input type="time" id="pt"><input id="pn" placeholder="Task"></div>
 <button onclick="addPl()">Add to Plan</button><div id="pl"></div></div>
 </section>
-
 <section id="p1" hidden>
 <div class="card"><h2>Study History</h2>
 <div class="two seg"><button id="r7" class="on" onclick="R=7;stats()">Week</button><button id="r30" onclick="R=30;stats()">Month</button></div>
@@ -94,7 +95,6 @@ nav button.on{color:#1f86d6;border-top:3px solid #3a9ee8;padding-top:11px}
 <div class="card"><h2>By Subject</h2><div id="sj"></div></div>
 <div class="card"><h2>Study Log</h2><div id="slog"></div></div>
 </section>
-
 <section id="p2" hidden>
 <div class="card"><h2>Add Test Marks</h2><select id="ts"></select><input id="tn" placeholder="Test name">
 <div class="two"><input type="number" id="tm1" placeholder="Score"><input type="number" id="tm2" placeholder="Out of"></div>
@@ -102,36 +102,32 @@ nav button.on{color:#1f86d6;border-top:3px solid #3a9ee8;padding-top:11px}
 <div class="card"><h2>Subject Progress</h2><div id="tp"></div></div>
 <div class="card"><h2>Recent Tests</h2><div id="tl"></div></div>
 </section>
-
 <section id="p3" hidden>
 <div class="card"><h2>New Note / Formula</h2><select id="ns"></select><input id="nt" placeholder="Title">
 <textarea id="nbx" placeholder="Write your note or formula..."></textarea><button onclick="addN()">Save Note</button></div>
 <div class="card"><h2>My Notes</h2><div class="two"><select id="nf" onchange="notes()"></select><input id="nq" placeholder="Search" oninput="notes()"></div><div id="nl"></div></div>
 </section>
-
 <section id="p4" hidden>
 <div class="card"><h2>Add Revision</h2><input id="rt" placeholder="What to revise?"><input type="date" id="rdt">
 <button onclick="addR()">Set Reminder</button><div class="sm">Reminders show inside this app (no phone notifications).</div></div>
 <div class="card"><h2>Revision List</h2><div id="rl"></div></div>
 </section>
-
 <section id="p5" hidden>
 <div class="card"><h2>Syllabus Progress</h2><div id="ov"></div></div>
 <div class="card"><h2>Add Chapters</h2><select id="cps" onchange="chap()"></select>
 <textarea id="cnm" placeholder="Chapter name (add many: one per line)"></textarea><button onclick="addC()">Add Chapters</button></div>
 <div class="card"><h2 id="cth">Chapters</h2>
-<div class="two seg"><button id="f0" class="on" onclick="CF=0;chap()">All</button><button id="f1" onclick="CF=1;chap()">Pending</button><button id="f2" onclick="CF=2;chap()">Final Done</button></div>
+<div class="two seg"><button id="f0" class="on" onclick="CF=0;chap()">All</button><button id="f1" onclick="CF=1;chap()">Pending</button><button id="f2" onclick="CF=2;chap()">Completed</button></div>
 <div class="sm" id="cst" style="margin-top:8px"></div><div class="bar"><div id="cbar"></div></div><div id="cl"></div></div>
 </section>
-
 <nav id="nav"><button class="on" onclick="go(0)">Today</button><button onclick="go(1)">Stats</button><button onclick="go(2)">Tests</button><button onclick="go(3)">Notes</button><button onclick="go(4)">Revise<span id="bd" hidden></span></button><button onclick="go(5)">Chapters</button></nav>
-</div>
-
-<script>
+</div><script>
 const PW="parvyoucandoit",LOGO_URL="",GOAL=10800,MIN=1800,EXAM_HOUR=9;
 const S=["Hindi","English","Maths","Science","Social Science","Sanskrit"];
 let D={};try{D=JSON.parse(localStorage.getItem("pp1"))||{}}catch(e){}
 ["pl","t","n","r","ch"].forEach(k=>D[k]=D[k]||[]);D.h=D.h||{};
+D.ch.forEach(x=>{if(x.a.length===3)x.a=[x.a[1],x.a[0],x.a[2],false]});
+D.ph=D.ph||[{id:"p1",n:"Write",f:"",t:"2026-10-20"},{id:"p2",n:"Simple Learn",f:"2026-10-20",t:"2026-11-01"},{id:"p3",n:"Final",f:"2026-11-01",t:"2026-11-10"},{id:"p4",n:"Revision",f:"2026-11-10",t:"2026-11-21"}];
 let R=7;
 const $=id=>document.getElementById(id);
 const save=()=>localStorage.setItem("pp1",JSON.stringify(D));
@@ -152,154 +148,185 @@ const opts=a=>a.map(s=>`<option>${s}</option>`).join("");
 const tgl=(k,id)=>{const x=D[k].find(o=>o.id===id);x.done=!x.done;save();rd()};
 const del=(k,id)=>{D[k]=D[k].filter(o=>o.id!==id);save();rd()};
 document.querySelectorAll(".lg").forEach(e=>e.innerHTML=LOGO_URL?`<img src="${LOGO_URL}" alt="logo">`:"P");
-
 function login(){
- if($("pw").value===PW){sessionStorage.ok=1;start()}
- else{$("err").textContent="Incorrect password.";retrig($("pw"),"shake")}
+if($("pw").value===PW){sessionStorage.ok=1;start()}
+else{$("err").textContent="Incorrect password.";retrig($("pw"),"shake")}
 }
 function start(){
- $("lock").hidden=true;if(!D.ex){editEx();return}$("su").hidden=true;$("app").hidden=false;
- $("hs").innerHTML=$("ts").innerHTML=$("ns").innerHTML=$("cps").innerHTML=opts(S);
- $("nf").innerHTML=opts(["All subjects",...S]);
- $("pd").value=$("td").value=$("rdt").value=tod();
- if(D.sw)$("hs").value=D.sw.s;
- rd();tick();
+$("lock").hidden=true;if(!D.ex){editEx();return}$("su").hidden=true;$("app").hidden=false;
+$("hs").innerHTML=$("ts").innerHTML=$("ns").innerHTML=$("cps").innerHTML=opts(S);
+$("nf").innerHTML=opts(["All subjects",...S]);
+$("pd").value=$("td").value=$("rdt").value=tod();
+if(D.sw)$("hs").value=D.sw.s;
+rd();tick();
 }
 function go(i){
- for(let j=0;j<6;j++)$("p"+j).hidden=j!==i;
- [...$("nav").children].forEach((b,j)=>b.classList.toggle("on",j===i));
- scrollTo(0,0);
+for(let j=0;j<6;j++)$("p"+j).hidden=j!==i;
+[...$("nav").children].forEach((b,j)=>b.classList.toggle("on",j===i));
+scrollTo(0,0);
 }
 function toggle(){
- if(D.sw){const e=run(),k=tod();D.h[k]=D.h[k]||{};D.h[k][D.sw.s]=(D.h[k][D.sw.s]||0)+e;D.sw=null}
- else D.sw={s:$("hs").value,t:Date.now()};
- save();rd();tick();
+if(D.sw){const e=run(),k=tod();D.h[k]=D.h[k]||{};D.h[k][D.sw.s]=(D.h[k][D.sw.s]||0)+e;D.sw=null}
+else D.sw={s:$("hs").value,t:Date.now()};
+save();rd();tick();
 }
 function addPl(){
- const n=$("pn").value.trim();if(!n)return;
- D.pl.push({id:uid(),d:$("pd").value,t:$("pt").value,n:n,done:false});
- $("pn").value="";save();rd();
+const n=$("pn").value.trim();if(!n)return;
+D.pl.push({id:uid(),d:$("pd").value,t:$("pt").value,n:n,done:false});
+$("pn").value="";save();rd();
 }
 function addT(){
- const s1=+$("tm1").value,s2=+$("tm2").value,n=$("tn").value.trim();
- if(!n||!s2||s1<0||s1>s2||$("tm1").value===""){$("te").textContent="Enter a test name and valid marks.";return}
- $("te").textContent="";
- D.t.push({id:uid(),s:$("ts").value,n:n,a:s1,m:s2,d:$("td").value});
- $("tn").value=$("tm1").value=$("tm2").value="";save();rd();
+const s1=+$("tm1").value,s2=+$("tm2").value,n=$("tn").value.trim();
+if(!n||!s2||s1<0||s1>s2||$("tm1").value===""){$("te").textContent="Enter a test name and valid marks.";return}
+$("te").textContent="";
+D.t.push({id:uid(),s:$("ts").value,n:n,a:s1,m:s2,d:$("td").value});
+$("tn").value=$("tm1").value=$("tm2").value="";save();rd();
 }
 function addN(){
- const t=$("nt").value.trim(),x=$("nbx").value.trim();if(!t&&!x)return;
- D.n.unshift({id:uid(),s:$("ns").value,t:t||"Untitled",x:x});
- $("nt").value=$("nbx").value="";save();rd();
+const t=$("nt").value.trim(),x=$("nbx").value.trim();if(!t&&!x)return;
+D.n.unshift({id:uid(),s:$("ns").value,t:t||"Untitled",x:x});
+$("nt").value=$("nbx").value="";save();rd();
 }
 function addR(){
- const t=$("rt").value.trim(),d=$("rdt").value;if(!t||!d)return;
- D.r.push({id:uid(),n:t,d:d,done:false});$("rt").value="";save();rd();
+const t=$("rt").value.trim(),d=$("rdt").value;if(!t||!d)return;
+D.r.push({id:uid(),n:t,d:d,done:false});$("rt").value="";save();rd();
 }
-
 function rd(){
- // planner + timer controls
- $("sb").textContent=D.sw?"Stop & Save":"Start Studying";
- $("sb").className=D.sw?"stop":"";$("hs").disabled=!!D.sw;$("tc").classList.toggle("run",!!D.sw);
- $("pl").innerHTML=D.pl.filter(x=>x.d===$("pd").value).sort((a,b)=>a.t.localeCompare(b.t)).map(x=>
-  `<div class="row"><input type="checkbox" ${x.done?"checked":""} onchange="tgl('pl','${x.id}')"><span class="${x.done?"done":""}">${x.t?`<b>${x.t}</b> `:""}${esc(x.n)}</span><button class="x" onclick="del('pl','${x.id}')">\u2715</button></div>`).join("")||'<div class="sm">No tasks for this date</div>';
- stats();tests();notes();rev();chap();exams();
+$("sb").textContent=D.sw?"Stop & Save":"Start Studying";
+$("sb").className=D.sw?"stop":"";$("hs").disabled=!!D.sw;$("tc").classList.toggle("run",!!D.sw);
+$("pl").innerHTML=D.pl.filter(x=>x.d===$("pd").value).sort((a,b)=>a.t.localeCompare(b.t)).map(x=>
+`<div class="row"><input type="checkbox" ${x.done?"checked":""} onchange="tgl('pl','${x.id}')"><span class="${x.done?"done":""}">${x.t?`<b>${x.t}</b> `:""}${esc(x.n)}</span><button class="x" onclick="del('pl','${x.id}')">\u2715</button></div>`).join("")||'<div class="sm">No tasks for this date</div>';
+stats();tests();notes();rev();chap();exams();phases();
 }
 function stats(){
- $("r7").classList.toggle("on",R===7);$("r30").classList.toggle("on",R===30);
- const days=[];for(let i=R-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d)}
- const v=days.map(d=>tt(key(d))),mx=Math.max(...v,3600),sum=v.reduce((a,b)=>a+b,0);
- $("ch").innerHTML=days.map((d,i)=>`<div class="b"><div style="height:${v[i]/mx*100}%"></div><small>${R===7?"SMTWTFS"[d.getDay()]:(i%5===0?d.getDate():"")}</small></div>`).join("");
- const lg=[];for(let i=0;i<30;i++){const d=new Date();d.setDate(d.getDate()-i);const k=key(d),h=D.h[k];if(h&&Object.values(h).some(v=>v>0))lg.push([k,h])}
- $("slog").innerHTML=lg.map(([k,h])=>`<div class="note"><div class="two"><b>${fd(k)}</b><span style="text-align:right;color:#1f86d6">${hm(Object.values(h).reduce((a,b)=>a+b,0))}</span></div><div>${Object.entries(h).filter(e=>e[1]>0).map(([s,t])=>`<span class="tag" style="margin:4px 4px 0 0">${s} ${hm(t)}</span>`).join("")}</div></div>`).join("")||'<div class="sm">No study history yet</div>';
- $("cs").textContent=`Total ${hm(sum)} \u2022 Daily average ${hm(Math.round(sum/R))}`;
- const sj=S.map(s=>[s,days.reduce((a,d)=>a+((D.h[key(d)]||{})[s]||0),0)]),m2=Math.max(...sj.map(x=>x[1]),1);
- $("sj").innerHTML=sj.map(([s,t])=>`<div style="margin:8px 0"><div class="two" style="font-size:14px"><span>${s}</span><span style="text-align:right;color:#1f86d6">${hm(t)}</span></div><div class="bar" style="margin:3px 0"><div style="width:${t/m2*100}%"></div></div></div>`).join("");
+$("r7").classList.toggle("on",R===7);$("r30").classList.toggle("on",R===30);
+const days=[];for(let i=R-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d)}
+const v=days.map(d=>tt(key(d))),mx=Math.max(...v,3600),sum=v.reduce((a,b)=>a+b,0);
+$("ch").innerHTML=days.map((d,i)=>`<div class="b"><div style="height:${v[i]/mx*100}%"></div><small>${R===7?"SMTWTFS"[d.getDay()]:(i%5===0?d.getDate():"")}</small></div>`).join("");
+const lg=[];for(let i=0;i<30;i++){const d=new Date();d.setDate(d.getDate()-i);const k=key(d),h=D.h[k];if(h&&Object.values(h).some(v=>v>0))lg.push([k,h])}
+$("slog").innerHTML=lg.map(([k,h])=>`<div class="note"><div class="two"><b>${fd(k)}</b><span style="text-align:right;color:#1f86d6">${hm(Object.values(h).reduce((a,b)=>a+b,0))}</span></div><div>${Object.entries(h).filter(e=>e[1]>0).map(([s,t])=>`<span class="tag" style="margin:4px 4px 0 0">${s} ${hm(t)}</span>`).join("")}</div></div>`).join("")||'<div class="sm">No study history yet</div>';
+$("cs").textContent=`Total ${hm(sum)} \u2022 Daily average ${hm(Math.round(sum/R))}`;
+const sj=S.map(s=>[s,days.reduce((a,d)=>a+((D.h[key(d)]||{})[s]||0),0)]),m2=Math.max(...sj.map(x=>x[1]),1);
+$("sj").innerHTML=sj.map(([s,t])=>`<div style="margin:8px 0"><div class="two" style="font-size:14px"><span>${s}</span><span style="text-align:right;color:#1f86d6">${hm(t)}</span></div><div class="bar" style="margin:3px 0"><div style="width:${t/m2*100}%"></div></div></div>`).join("");
 }
 function tests(){
- $("tp").innerHTML=S.map(s=>{
-  const l=D.t.filter(x=>x.s===s);if(!l.length)return"";
-  const p=Math.round(l.reduce((a,x)=>a+x.a,0)/l.reduce((a,x)=>a+x.m,0)*100);
-  return `<div style="margin:8px 0"><div class="two" style="font-size:14px"><span>${s} <span class="tag">${l.length} test${l.length>1?"s":""}</span></span><span style="text-align:right;color:#1f86d6">${p}%</span></div><div class="bar" style="margin:3px 0"><div style="width:${p}%"></div></div></div>`;
- }).join("")||'<div class="sm">Add a test to see progress</div>';
- $("tl").innerHTML=[...D.t].sort((a,b)=>b.d.localeCompare(a.d)).slice(0,15).map(x=>
-  `<div class="row"><span><b>${esc(x.n)}</b><br><small>${x.s} \u2022 ${fd(x.d)}</small></span><b>${x.a}/${x.m}</b><button class="x" onclick="del('t','${x.id}')">\u2715</button></div>`).join("")||'<div class="sm">No tests yet</div>';
+$("tp").innerHTML=S.map(s=>{
+const l=D.t.filter(x=>x.s===s);if(!l.length)return"";
+const p=Math.round(l.reduce((a,x)=>a+x.a,0)/l.reduce((a,x)=>a+x.m,0)*100);
+return `<div style="margin:8px 0"><div class="two" style="font-size:14px"><span>${s} <span class="tag">${l.length} test${l.length>1?"s":""}</span></span><span style="text-align:right;color:#1f86d6">${p}%</span></div><div class="bar" style="margin:3px 0"><div style="width:${p}%"></div></div></div>`;
+}).join("")||'<div class="sm">Add a test to see progress</div>';
+$("tl").innerHTML=[...D.t].sort((a,b)=>b.d.localeCompare(a.d)).slice(0,15).map(x=>
+`<div class="row"><span><b>${esc(x.n)}</b><br><small>${x.s} \u2022 ${fd(x.d)}</small></span><b>${x.a}/${x.m}</b><button class="x" onclick="del('t','${x.id}')">\u2715</button></div>`).join("")||'<div class="sm">No tests yet</div>';
 }
 function notes(){
- const f=$("nf").value,q=$("nq").value.toLowerCase();
- $("nl").innerHTML=D.n.filter(x=>(f==="All subjects"||x.s===f)&&(x.t+x.x).toLowerCase().includes(q)).map(x=>
-  `<div class="note"><div class="two"><b>${esc(x.t)}</b><span style="text-align:right"><span class="tag">${x.s}</span> <button class="x" style="display:inline-block" onclick="del('n','${x.id}')">\u2715</button></span></div><p>${esc(x.x)}</p></div>`).join("")||'<div class="sm" style="margin-top:8px">No notes found</div>';
+const f=$("nf").value,q=$("nq").value.toLowerCase();
+$("nl").innerHTML=D.n.filter(x=>(f==="All subjects"||x.s===f)&&(x.t+x.x).toLowerCase().includes(q)).map(x=>
+`<div class="note"><div class="two"><b>${esc(x.t)}</b><span style="text-align:right"><span class="tag">${x.s}</span> <button class="x" style="display:inline-block" onclick="del('n','${x.id}')">\u2715</button></span></div><p>${esc(x.x)}</p></div>`).join("")||'<div class="sm" style="margin-top:8px">No notes found</div>';
 }
 function rev(){
- const t=tod(),l=[...D.r].sort((a,b)=>a.done-b.done||a.d.localeCompare(b.d));
- $("rl").innerHTML=l.map(x=>{
-  const s=x.done?"Done":x.d<t?"Overdue":x.d===t?"Due today":fd(x.d);
-  return `<div class="row"><input type="checkbox" ${x.done?"checked":""} onchange="tgl('r','${x.id}')"><span class="${x.done?"done":""}">${esc(x.n)}<br><small class="${!x.done&&x.d<t?"late":""}">${s}</small></span><button class="x" onclick="del('r','${x.id}')">\u2715</button></div>`;
- }).join("")||'<div class="sm">No revisions set</div>';
- const due=D.r.filter(x=>!x.done&&x.d<=t).length;
- $("bd").hidden=!due;$("bd").textContent=due;
- $("hi").textContent="Welcome back, Parv"+(due?` \u2022 ${due} revision${due>1?"s":""} due`:"");
+const t=tod(),l=[...D.r].sort((a,b)=>a.done-b.done||a.d.localeCompare(b.d));
+$("rl").innerHTML=l.map(x=>{
+const s=x.done?"Done":x.d<t?"Overdue":x.d===t?"Due today":fd(x.d);
+return `<div class="row"><input type="checkbox" ${x.done?"checked":""} onchange="tgl('r','${x.id}')"><span class="${x.done?"done":""}">${esc(x.n)}<br><small class="${!x.done&&x.d<t?"late":""}">${s}</small></span><button class="x" onclick="del('r','${x.id}')">\u2715</button></div>`;
+}).join("")||'<div class="sm">No revisions set</div>';
+const due=D.r.filter(x=>!x.done&&x.d<=t).length;
+$("bd").hidden=!due;$("bd").textContent=due;
+$("hi").textContent="Welcome back, Parv"+(due?` \u2022 ${due} revision${due>1?"s":""} due`:"");
 }
 function exForm(){$("sul").innerHTML=S.map((s,i)=>`<label class="lb">${s} exam date</label><input type="date" id="x${i}" min="${tod()}" value="${(D.ex||{})[s]||""}">`).join("")}
 function editEx(){exForm();$("sue").textContent="";$("lock").hidden=true;$("app").hidden=true;$("su").hidden=false}
 function saveEx(){
- const e={};S.forEach((s,i)=>{const v=$("x"+i).value;if(v)e[s]=v});
- if(!Object.keys(e).length){$("sue").textContent="Add at least one exam date.";return}
- if(Object.values(e).some(v=>v<tod())){$("sue").textContent="Exam dates cannot be in the past.";return}
- D.ex=e;save();start();
+const e={};S.forEach((s,i)=>{const v=$("x"+i).value;if(v)e[s]=v});
+if(!Object.keys(e).length){$("sue").textContent="Add at least one exam date.";return}
+if(Object.values(e).some(v=>v<tod())){$("sue").textContent="Exam dates cannot be in the past.";return}
+D.ex=e;save();start();
 }
 function exams(){
- $("exl").innerHTML=Object.entries(D.ex||{}).sort((a,b)=>a[1].localeCompare(b[1])).map(([s,d])=>{
-  const n=Math.round((new Date(d+"T00:00:00")-new Date(tod()+"T00:00:00"))/864e5);
-  return `<div class="ex"><b>${s}</b><span>${fd(d)} \u2022 ${n<0?"Completed":n===0?"Today":n===1?"Tomorrow":n+" days left"}</span></div>`}).join("");
- const h=D.h[tod()]||{};
- $("tsb").innerHTML=S.filter(s=>h[s]>0).map(s=>`<div class="ex"><b>${s}</b><span>${hm(h[s])}</span></div>`).join("")||'<div class="sm">No study saved today yet</div>';
+$("exl").innerHTML=Object.entries(D.ex||{}).sort((a,b)=>a[1].localeCompare(b[1])).map(([s,d])=>{
+const n=Math.round((new Date(d+"T00:00:00")-new Date(tod()+"T00:00:00"))/864e5);
+return `<div class="ex"><b>${s}</b><span>${fd(d)} \u2022 ${n<0?"Completed":n===0?"Today":n===1?"Tomorrow":n+" days left"}</span></div>`}).join("");
+const h=D.h[tod()]||{};
+$("tsb").innerHTML=S.filter(s=>h[s]>0).map(s=>`<div class="ex"><b>${s}</b><span>${hm(h[s])}</span></div>`).join("")||'<div class="sm">No study saved today yet</div>';
 }
+const STG=["Write","Simple Learn","Final","Revision"];
+let EP=null;
 function addC(){
- const l=$("cnm").value.split("\n").map(x=>x.trim()).filter(Boolean);if(!l.length)return;
- l.forEach(n=>D.ch.push({id:uid(),s:$("cps").value,n:n,a:[false,false,false],p:false}));
- $("cnm").value="";save();rd();
+const l=$("cnm").value.split("\n").map(x=>x.trim()).filter(Boolean);if(!l.length)return;
+l.forEach(n=>D.ch.push({id:uid(),s:$("cps").value,n:n,a:[false,false,false,false],p:false}));
+$("cnm").value="";save();rd();
 }
-const stg=(id,i)=>{const x=D.ch.find(o=>o.id===id);x.a[i]=!x.a[i];save();rd()};
-const pri=id=>{const x=D.ch.find(o=>o.id===id);x.p=!x.p;save();rd()};
+const fnd=id=>D.ch.find(o=>o.id===id);
+const stg=(id,i)=>{const x=fnd(id);x.a[i]=!x.a[i];save();rd()};
+const pri=id=>{const x=fnd(id);x.p=!x.p;save();rd()};
+const dc=id=>{if(confirm("Delete this chapter?"))del("ch",id)};
+function edC(id){
+const x=fnd(id),n=prompt("Edit chapter name",x.n);
+if(n&&n.trim()){x.n=n.trim();save();rd()}
+}
+function mv(id,d){
+const x=fnd(id),i=D.ch.indexOf(x);let j=i+d;
+while(j>=0&&j<D.ch.length&&D.ch[j].s!==x.s)j+=d;
+if(j<0||j>=D.ch.length)return;
+D.ch[i]=D.ch[j];D.ch[j]=x;save();rd();
+}
 function chap(){
- const s=$("cps").value,all=D.ch.filter(x=>x.s===s),n=all.length,c=i=>all.filter(x=>x.a[i]).length;
- [0,1,2].forEach(i=>$("f"+i).classList.toggle("on",CF===i));
- $("cth").textContent=s+" Chapters";
- $("cst").textContent=n?`Simple ${c(0)}/${n} \u2022 Write ${c(1)}/${n} \u2022 Final ${c(2)}/${n}`:"No chapters added yet";
- $("cbar").style.width=(n?(c(0)+c(1)+c(2))/(3*n)*100:0)+"%";
- $("cl").innerHTML=all.filter(x=>CF===0||(CF===1&&!x.a[2])||(CF===2&&x.a[2])).sort((a,b)=>b.p-a.p).map(x=>{
-  const k=x.a.filter(Boolean).length;
-  return chRow(x,k);
- }).join("")||'<div class="sm">Nothing here</div>';
- const ps=S.map(q=>{const l=D.ch.filter(x=>x.s===q);return[q,l.length,l.reduce((a,x)=>a+x.a.filter(Boolean).length,0),l.filter(x=>x.a[2]).length]});
- const tn=ps.reduce((a,x)=>a+x[1],0),tk=ps.reduce((a,x)=>a+x[2],0);
- const bars=ps.map(([q,m,t,f])=>{
-  const p=m?t/(3*m)*100:0;
-  return `<div style="margin:8px 0"><div class="two" style="font-size:14px"><span>${q} <span class="tag">${f}/${m} final</span></span><span style="text-align:right;color:#1f86d6">${Math.round(p)}%</span></div><div class="bar" style="margin:3px 0"><div style="width:${p}%"></div></div></div>`;
- }).join("");
- $("ov").innerHTML=`<div class="big">${tn?Math.round(tk/(3*tn)*100):0}%</div><div class="sm">overall complete \u2022 ${tn} chapters</div>`+bars;
+const s=$("cps").value,all=D.ch.filter(x=>x.s===s),n=all.length,c=i=>all.filter(x=>x.a[i]).length;
+[0,1,2].forEach(i=>$("f"+i).classList.toggle("on",CF===i));
+$("cth").textContent=s+" Chapters";
+$("cst").textContent=n?STG.map((l,i)=>`${l} ${c(i)}/${n}`).join(" \u2022 "):"No chapters added yet";
+$("cbar").style.width=(n?(c(0)+c(1)+c(2)+c(3))/(4*n)*100:0)+"%";
+const L=all.filter(x=>{const k=x.a.filter(Boolean).length;return CF===0||(CF===1&&k<4)||(CF===2&&k===4)});
+$("cl").innerHTML=L.map((x,i)=>chRow(x,i,L.length)).join("")||'<div class="sm">Nothing here</div>';
+const ps=S.map(q=>{const l=D.ch.filter(x=>x.s===q);return[q,l.length,l.reduce((a,x)=>a+x.a.filter(Boolean).length,0),l.filter(x=>x.a.every(Boolean)).length]});
+const tn=ps.reduce((a,x)=>a+x[1],0),tk=ps.reduce((a,x)=>a+x[2],0);
+const bars=ps.map(([q,m,t,f])=>{
+const p=m?t/(4*m)*100:0;
+return `<div style="margin:8px 0"><div class="two" style="font-size:14px"><span>${q} <span class="tag">${f}/${m} complete</span></span><span style="text-align:right;color:#1f86d6">${Math.round(p)}%</span></div><div class="bar" style="margin:3px 0"><div style="width:${p}%"></div></div></div>`;
+}).join("");
+$("ov").innerHTML=`<div class="big">${tn?Math.round(tk/(4*tn)*100):0}%</div><div class="sm">overall complete \u2022 ${tn} chapters</div>`+bars;
 }
-function chRow(x,k){
- const st=["Simple","Write","Final"].map((l,i)=>`<label class="${x.a[i]?"on":""}"><input type="checkbox" ${x.a[i]?"checked":""} onchange="stg('${x.id}',${i})">${l}</label>`).join("");
- const star=`<button class="x" style="display:inline-block" onclick="pri('${x.id}')">${x.p?"\u2605":"\u2606"}</button>`;
- const dl=`<button class="x" style="display:inline-block" onclick="del('ch','${x.id}')">\u2715</button>`;
- const msg=k===3?"Completed \u2705":k+"/3 done";
- return `<div class="note"><div class="two"><b>${x.p?"\u2605 ":""}${esc(x.n)}</b><span style="text-align:right">${star}${dl}</span></div><div class="st3">${st}</div><div class="sm" style="text-align:left;margin-top:5px">${msg}</div></div>`;
+function chRow(x,i,len){
+const k=x.a.filter(Boolean).length,b=(f,t)=>`<button class="ib" onclick="${f}">${t}</button>`;
+const st=STG.map((l,j)=>`<label class="${x.a[j]?"on":""}"><input type="checkbox" ${x.a[j]?"checked":""} onchange="stg('${x.id}',${j})">${l}</label>`).join("");
+const up=CF===0&&i>0?b(`mv('${x.id}',-1)`,"\u2191"):"";
+const dn=CF===0&&i<len-1?b(`mv('${x.id}',1)`,"\u2193"):"";
+const tools=up+dn+b(`edC('${x.id}')`,"\u270E")+b(`pri('${x.id}')`,x.p?"\u2605":"\u2606")+b(`dc('${x.id}')`,"\u2715");
+const msg=k===4?"Completed \u2705":k+"/4 done";
+return `<div class="note"><div class="two"><b>${x.p?"\u2605 ":""}${esc(x.n)}</b><span style="flex:none;white-space:nowrap">${tools}</span></div><div class="st3">${st}</div><div class="sm" style="text-align:left;margin-top:5px">${msg}</div></div>`;
 }
+function phStat(p){
+const t=tod(),d=x=>Math.round((new Date(x+"T00:00:00")-new Date(t+"T00:00:00"))/864e5);
+if(p.f&&t<p.f)return`Starts in ${d(p.f)} days`;
+if(t>p.t)return"Completed";
+const n=d(p.t);return`Ongoing \u2022 ${n===0?"last day":n+" days left"}`;
+}
+function phases(){
+$("phl").innerHTML=[...D.ph].sort((a,b)=>(a.f||"").localeCompare(b.f||"")).map(p=>`<div class="note"><div class="two"><b>${esc(p.n)}</b><span style="flex:none;white-space:nowrap"><button class="ib" onclick="edPh('${p.id}')">\u270E</button><button class="ib" onclick="delPh('${p.id}')">\u2715</button></span></div><div class="sm" style="text-align:left">${p.f?fd(p.f)+" \u2192 ":"Till "}${fd(p.t)}</div><div class="sm" style="text-align:left;color:#1f86d6">${phStat(p)}</div></div>`).join("")||'<div class="sm">No phases yet</div>';
+}
+function savePh(){
+const n=$("phn").value.trim(),f=$("phf").value,t=$("pht").value;
+if(!n||!t||(f&&f>t)){alert("Enter a phase name and valid dates (From must be before To).");return}
+if(EP){const p=D.ph.find(o=>o.id===EP);p.n=n;p.f=f;p.t=t}else D.ph.push({id:uid(),n:n,f:f,t:t});
+EP=null;$("phn").value=$("phf").value=$("pht").value="";$("phb").textContent="Add Phase";save();rd();
+}
+function edPh(id){
+const p=D.ph.find(o=>o.id===id);EP=id;
+$("phn").value=p.n;$("phf").value=p.f;$("pht").value=p.t;$("phb").textContent="Save Changes";$("phn").focus();
+}
+const delPh=id=>{if(confirm("Delete this phase?")){D.ph=D.ph.filter(o=>o.id!==id);save();rd()}};
 function tick(){
- if($("app").hidden)return;
- const now=Date.now(),ex=Object.entries(D.ex||{}).map(([s,d])=>({s:s,t:exT(d)})).sort((a,b)=>a.t-b.t),nx=ex.find(e=>e.t>now);
- if(nx){const r=Math.floor((nx.t-now)/1000);$("nx").textContent=nx.s;
-  [Math.floor(r/86400),Math.floor(r%86400/3600),Math.floor(r%3600/60),r%60].forEach((v,i)=>{const el=$("cd_"+"dhms"[i]),q=p2(v);if(el.textContent!==q){el.textContent=q;if(i===3)retrig(el,"pop")}});
- }else{$("nx").textContent="No upcoming exam";["d","h","m","s"].forEach(x=>$("cd_"+x).textContent="00")}
- const t=tt(tod());
- $("gb").style.width=Math.min(100,t/GOAL*100)+"%";
- $("gt").textContent=`Today: ${hm(t)} of 3h goal`+(t<MIN?` \u2022 ${Math.ceil((MIN-t)/60)} min to secure streak`:"");
- let n=0,d=new Date();
- if(tt(key(d))<MIN)d.setDate(d.getDate()-1);
- while(tt(key(d))>=MIN){n++;d.setDate(d.getDate()-1)}
- $("st").textContent=n;$("sw").textContent=fmt(run());
+if($("app").hidden)return;
+const now=Date.now(),ex=Object.entries(D.ex||{}).map(([s,d])=>({s:s,t:exT(d)})).sort((a,b)=>a.t-b.t),nx=ex.find(e=>e.t>now);
+if(nx){const r=Math.floor((nx.t-now)/1000);$("nx").textContent=nx.s;
+[Math.floor(r/86400),Math.floor(r%86400/3600),Math.floor(r%3600/60),r%60].forEach((v,i)=>{const el=$("cd_"+"dhms"[i]),q=p2(v);if(el.textContent!==q){el.textContent=q;if(i===3)retrig(el,"pop")}});
+}else{$("nx").textContent="No upcoming exam";["d","h","m","s"].forEach(x=>$("cd_"+x).textContent="00")}
+const t=tt(tod());
+$("gb").style.width=Math.min(100,t/GOAL*100)+"%";
+$("gt").textContent=`Today: ${hm(t)} of 3h goal`+(t<MIN?` \u2022 ${Math.ceil((MIN-t)/60)} min to secure streak`:"");
+let n=0,d=new Date();
+if(tt(key(d))<MIN)d.setDate(d.getDate()-1);
+while(tt(key(d))>=MIN){n++;d.setDate(d.getDate()-1)}
+$("st").textContent=n;$("sw").textContent=fmt(run());
 }
 setInterval(tick,1000);
 if(sessionStorage.ok)start();
